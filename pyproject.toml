@@ -1,0 +1,4 @@
+[project]
+name = "personal_finances_rest"
+version = "0.0.0"
+dependencies = []

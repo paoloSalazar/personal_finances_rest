@@ -1,0 +1,3 @@
+### GET root of local FastAPI
+GET http://127.0.0.1:8000/api/categories/
+Accept: application/json

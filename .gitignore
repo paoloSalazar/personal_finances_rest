@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.venv/
+.env
+
+# pytest / caches
+.pytest_cache/
+.cache/
+
+# macOS
+.DS_Store
+
+# DB / local data
+db/personal_finances.db
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+
+# distribution
+build/
+dist/
