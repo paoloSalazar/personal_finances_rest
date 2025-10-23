@@ -1,5 +1,6 @@
 from .init import conn, cursor
-from model.category import Category
+from model.schemas.category import CategoryBase, CategoryCreate, CategoryRead
+from model.tables.category import Category
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS categories (
@@ -9,50 +10,55 @@ CREATE TABLE IF NOT EXISTS categories (
 )   
 """)
 
-def row_to_model(row: tuple) -> Category:
-    """convert a database row to a Category model"""
+def row_to_schema(row: tuple) -> CategoryRead:
+    """convert a database row to a CategoryRead schema"""
     (id, name, description) = row
-    return Category(id=id, name=name, description=description)
+    return CategoryRead(id=id, name=name, description=description)
 
-def model_to_dict(category: Category) -> dict:
-    """convert a Category model to a dictionary"""
+def schema_to_dict(category: CategoryBase) -> dict:
+    """convert a Category schema to a dictionary"""
     return category.model_dump()
 
-def get_one(name: str) -> Category | None:
+def get_one(name: str) -> CategoryRead | None:
     """return one category by name"""
-    qry = "SELECT * FROM categories WHERE name=:name"
+    qry = "SELECT id,name,description FROM categories WHERE name=:name"
     params = {"name": name}
     cursor.execute(qry, params)
-    return row_to_model(cursor.fetchone())
+    row = cursor.fetchone()
+    return row_to_schema(row) if row else None
 
-def get_all() -> list[Category]:
+def get_all() -> list[CategoryRead]:
     """return all categories"""
-    qry = "SELECT * FROM categories"
+    qry = "SELECT id,name,description FROM categories"
     cursor.execute(qry)
-    return [row_to_model(row) for row in cursor.fetchall()]
+    return [row_to_schema(row) for row in cursor.fetchall()]
 
-def create(category: Category) -> Category:
+def create(category: CategoryCreate) -> CategoryRead:
     qry = "INSERT INTO categories (name, description) VALUES (:name, :description)"
-    params = model_to_dict(category)
+    params = schema_to_dict(category)
     cursor.execute(qry, params)
+    conn.commit()  
     return get_one(category.name)
 
-def modify(category: Category) -> Category:
+def modify(category: CategoryBase) -> CategoryRead:
     qry = "UPDATE categories SET description=:description WHERE name=:name"
-    params = model_to_dict(category)
+    params = schema_to_dict(category)
     params["name_orig"] = category.name
     _ = cursor.execute(qry, params)
+    conn.commit()  
     return get_one(category.name)
 
-def replace(category: Category) -> Category:
+def replace(category: CategoryBase) -> CategoryRead:
     qry = "UPDATE categories SET name=:name, description=:description WHERE name=:name_orig"
-    params = model_to_dict(category)
+    params = schema_to_dict(category)
     params["name_orig"] = category.name
     _ = cursor.execute(qry, params)
+    conn.commit()  
     return get_one(category.name)
 
 def delete(name: str) -> bool:
     qry = "DELETE FROM categories WHERE name=:name"
     params = {"name": name}
     res = cursor.execute(qry, params)
+    conn.commit()  
     return bool(res)
