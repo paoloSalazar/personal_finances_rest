@@ -8,6 +8,7 @@ from alembic import context
 
 # Import your models and Base
 from model.tables.category import Category
+from model.tables.daily_finance import DailyFinance
 from model.database import Base
 
 # this is the Alembic Config object
@@ -55,6 +56,7 @@ def run_migrations_online() -> None:
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+
 
     with connectable.connect() as connection:
         context.configure(

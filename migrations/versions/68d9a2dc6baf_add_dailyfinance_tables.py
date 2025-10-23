@@ -1,8 +1,8 @@
-"""Create categories table
+"""add dailyfinance tables
 
-Revision ID: e0e955594bc2
+Revision ID: 68d9a2dc6baf
 Revises: 
-Create Date: 2025-10-23 00:02:24.681296
+Create Date: 2025-10-23 01:15:04.756584
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'e0e955594bc2'
+revision: str = '68d9a2dc6baf'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
