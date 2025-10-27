@@ -1,24 +1,47 @@
-from fastapi import APIRouter
+import logging
+from fastapi import APIRouter, HTTPException
 from model.schemas.category import CategoryBase, CategoryRead, CategoryCreate
 import service.category as service
+import sqlite3
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/categories")
 
 @router.get("/")
 def get_all() -> list[CategoryBase]:
     """Get all categories"""
-    return service.get_all()
+    logger.info("Fetching all categories")
+    result = service.get_all()
+    logger.info(f"Retrieved {len(result)} categories")
+    return result
 
 @router.get("/{name}")
 def get_one(name: str) -> CategoryRead | None:
     """Get one category by name"""
-    return service.get_one(name)
+    logger.info(f"Fetching category with name: {name}")
+    result = service.get_one(name)
+    if result:
+        logger.info(f"Found category: {result.name}")
+    else:
+        logger.warning(f"Category not found: {name}")
+    return result
 
 @router.post("/")
-def create(category: CategoryCreate) -> CategoryCreate | None:
-    """Create a new category (not implemented)"""
-    # TODO: implement creation logic
-    return service.create(category)
+def create(category: CategoryCreate) -> CategoryRead:
+    """Create a new category"""
+    logger.info(f"Creating category: {category.name}")
+    try:
+        result = service.create(category)
+        logger.info(f"Successfully created category: {result.name} with id: {result.id}")
+        return result
+    except sqlite3.IntegrityError as e:
+        logger.error(f"Failed to create category {category.name}: {str(e)}")
+        if "UNIQUE constraint failed: categories.name" in str(e):
+            raise HTTPException(status_code=400, detail="Category with this name already exists")
+        else:
+            raise HTTPException(status_code=500, detail="Database error occurred")
+            
 
 @router.patch("/")
 def modify(category: CategoryBase) -> CategoryBase | None:

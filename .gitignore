@@ -25,3 +25,4 @@ db/personal_finances.db
 # distribution
 build/
 dist/
+app.log

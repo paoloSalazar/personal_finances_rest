@@ -189,3 +189,51 @@ context.configure(
             render_as_batch=("sqlite" in str(connectable.dialect.name))
         )
 ```
+
+
+Deleted migrations/versions folder
+If you deleted the migrations/versions folder, you have three concise recovery options:
+
+Restore from VCS or backup (recommended if available)
+```bash
+# restore the folder from the last commit
+git checkout -- migrations/versions
+```
+Recreate a baseline revision (if you don't have old migration files)
+```bash
+# create a new migration script reflecting current models
+alembic revision --autogenerate -m "recreate migrations"
+
+# if the DB already contains the current schema, mark it as up-to-date
+alembic stamp head
+```
+Recreate and apply migrations from scratch (if starting fresh)
+```bash
+alembic revision --autogenerate -m "initial"
+alembic upgrade head
+```
+
+## Changing database to use postgres
+how can I setup a docker container with postgres empty server.
+In the future I would like to change the database implementation to use postgres
+
+I've created the Docker setup for PostgreSQL. Here's what you need to do:
+
+Files Created:
+Dockerfile - Uses PostgreSQL 15 Alpine image with your database configuration
+docker-compose.yml - Orchestrates the PostgreSQL container with persistent storage
+.env.example - Example environment variables for database connection
+
+```bash
+# Build and start the PostgreSQL container
+docker-compose up -d
+
+# Check if it's running
+docker-compose ps
+
+# View logs
+docker-compose logs postgres
+
+# Connect to PostgreSQL (from host)
+psql -h localhost -p 5432 -U finance_user -d personal_finances
+```
