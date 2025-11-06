@@ -9,6 +9,7 @@ from alembic import context
 # Import your models and Base
 from model.tables.category import Category
 from model.tables.daily_finance import DailyFinance
+from model.tables.user import User
 from model.database import Base
 
 # this is the Alembic Config object
