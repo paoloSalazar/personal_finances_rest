@@ -237,3 +237,27 @@ docker-compose logs postgres
 # Connect to PostgreSQL (from host)
 psql -h localhost -p 5432 -U finance_user -d personal_finances
 ```
+
+## Security and authentication
+Generate ssl files
+```bash
+$ openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365 -subj "/CN=localhost"
+
+```
+This creates:
+
+* ssl/key.pem - Your private key
+* ssl/cert.pem - Your certificate
+
+then include files at starting fastapi
+```python
+import uvicorn
+
+uvicorn.run(
+    "main:app",
+    host="0.0.0.0",
+    port=8000,
+    ssl_keyfile="ssl/key.pem",      # Private key
+    ssl_certfile="ssl//cert.pem",     # Certificate
+)   
+```

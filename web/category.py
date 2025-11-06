@@ -1,8 +1,9 @@
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from model.schemas.category import CategoryBase, CategoryRead, CategoryCreate
 import service.category as service
 import sqlite3
+from service.user import get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def get_one(name: str) -> CategoryRead | None:
     return result
 
 @router.post("/")
-def create(category: CategoryCreate) -> CategoryRead:
+def create(category: CategoryCreate, current_user: dict = Depends(get_current_user)) -> CategoryRead:
     """Create a new category"""
     logger.info(f"Creating category: {category.name}")
     try:
@@ -44,19 +45,19 @@ def create(category: CategoryCreate) -> CategoryRead:
             
 
 @router.patch("/")
-def modify(category: CategoryBase) -> CategoryBase | None:
+def modify(category: CategoryBase, current_user: dict = Depends(get_current_user)) -> CategoryBase | None:
     """Modify fields of an existing category (not implemented)"""
     # TODO: implement partial update
     return service.modify(category)
 
 @router.put("/")
-def replace(category: CategoryBase) -> CategoryBase | None:
+def replace(category: CategoryBase, current_user: dict = Depends(get_current_user)) -> CategoryBase | None:
     """Replace an existing category (not implemented)"""
     # TODO: implement full replace
     return service.replace(category)
 
 @router.delete("/{name}")
-def delete(name: str) -> None:
+def delete(name: str, current_user: dict = Depends(get_current_user)) -> None:
     """Delete a category (not implemented)"""
     # TODO: implement deletion
     return service.delete(name)

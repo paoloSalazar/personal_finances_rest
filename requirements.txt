@@ -4,3 +4,7 @@ pydantic
 pytest
 alembic
 httpx
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+bcrypt==3.2.2
